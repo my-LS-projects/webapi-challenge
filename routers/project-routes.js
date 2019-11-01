@@ -71,10 +71,20 @@ router.post("/:id/actions", validateById, (req, res) => {
 });
 
 router.put("/:id/actions", validateById, (req, res) => {
-  const { id } = req.params;
+  const { id } = req.body;
   actModel
     .update(id, req.body)
-    .then(action => res.status(200).json(action))
+    .then(action => {
+      if (!id) {
+        res
+          .status(404)
+          .json({
+            message: "Please specify the id of the action you wish to update"
+          });
+      } else {
+        res.status(200).json(action);
+      }
+    })
     .catch(error => res.status(500).json({ error: "Could not update action" }));
 });
 
@@ -84,11 +94,15 @@ router.delete("/:id/actions", validateById, (req, res) => {
   actModel
     .remove(id)
     .then(deleted => {
-        if (!id) {
-            res.status(404).json({ message: "Please specify the id of the action you wish to delete" })
-        } else {
-            res.status(200).json(`Action with id of ${id} deleted`)
-        }
+      if (!id) {
+        res
+          .status(404)
+          .json({
+            message: "Please specify the id of the action you wish to delete"
+          });
+      } else {
+        res.status(200).json(`Action with id of ${id} deleted`);
+      }
     })
     .catch(error => res.status(500).json({ error: "Could not delete action" }));
 });
