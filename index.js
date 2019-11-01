@@ -12,3 +12,12 @@ I need this code, just don't know where, perhaps should make some middleware, do
 
 Go code!
 */
+
+const express = require('express')
+const server = express()
+const port = process.env.PORT || 8000;
+
+
+server.get('/', ( req, res ) => res.status(200).json({ message: "Server is running" }))
+
+server.listen(port, () => console.log(`SERVER RUNNING ON PORT ${port}`))
