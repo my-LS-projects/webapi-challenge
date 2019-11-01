@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
     .catch(() => res.status(500).json({ error: "Error retrieving projects" }));
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", validateById, (req, res) => {
   const { id } = req.params;
   get(id)
     .then(project => res.status(200).json(project))
@@ -28,16 +28,17 @@ router.post("/", (req, res) => {
     );
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", validateById, (req, res) => {
   const { id } = req.params;
-  const { name, description, completed } = req.body
-  console.log(req.body)
+  const { name, description, completed } = req.body;
   update(id, req.body)
     .then(project => res.status(200).json(project))
-    .catch(error => res.status(500).json({ message: "Project could not be updated" }));
+    .catch(error =>
+      res.status(500).json({ message: "Project could not be updated" })
+    );
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", validateById, (req, res) => {
   const { id } = req.params;
   remove(id)
     .then(project => {
@@ -50,13 +51,19 @@ router.delete("/:id", (req, res) => {
 
 // middleware
 
-// function validateById(req, res, next) {
-//   const { id } = req.params;
-//   get(id)
-//   .then(project => {
-//     project.length < 1
-//       ? res.status(404).json({ message: "No project found with specified id" })
-//       : next();
-//   })
-//   .catch(error => res.status(500).json({ message: "poop" }))
-// }
+function validateById(req, res, next) {
+  const { id } = req.params;
+  get(id)
+    .then(project => {
+      project === null
+        ? res
+            .status(404)
+            .json({ message: "No project found with specified id" })
+        : next();
+    })
+    .catch(error =>
+      res
+        .status(500)
+        .json({ message: "Couldn't retrieve project with specified id" })
+    );
+}
