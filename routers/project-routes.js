@@ -61,22 +61,36 @@ router.get("/:id/actions", validateById, (req, res) => {
 });
 
 router.post("/:id/actions", validateById, (req, res) => {
-    const { id } = req.params
-  actModel.insert(req.body)
+  const { id } = req.params;
+  actModel
+    .insert(req.body)
     .then(action => res.status(201).json(action))
-    .catch(error => res.status(500).json({ error: "Could not add action to project" }));
+    .catch(error =>
+      res.status(500).json({ error: "Could not add action to project" })
+    );
 });
 
 router.put("/:id/actions", validateById, (req, res) => {
-  actModel.update()
-    .then()
-    .catch();
+  const { id } = req.params;
+  actModel
+    .update(id, req.body)
+    .then(action => res.status(200).json(action))
+    .catch(error => res.status(500).json({ error: "Could not update action" }));
 });
 
 router.delete("/:id/actions", validateById, (req, res) => {
-  actModel.remove()
-    .then()
-    .catch();
+  const { id } = req.body;
+
+  actModel
+    .remove(id)
+    .then(deleted => {
+        if (!id) {
+            res.status(404).json({ message: "Please specify the id of the action you wish to delete" })
+        } else {
+            res.status(200).json(`Action with id of ${id} deleted`)
+        }
+    })
+    .catch(error => res.status(500).json({ error: "Could not delete action" }));
 });
 
 // middleware
@@ -97,7 +111,4 @@ function validateById(req, res, next) {
     );
 }
 
-function validateProject( req, res, next ) {
-
-} 
-
+function validateProject(req, res, next) {}
