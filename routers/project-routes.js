@@ -70,17 +70,15 @@ router.post("/:id/actions", validateById, (req, res) => {
     );
 });
 
-router.put("/:id/actions", validateById, (req, res) => {
+router.put("/:id/actions", validateById, validateProject, (req, res) => {
   const { id } = req.body;
   actModel
     .update(id, req.body)
     .then(action => {
       if (!id) {
-        res
-          .status(404)
-          .json({
-            message: "Please specify the id of the action you wish to update"
-          });
+        res.status(404).json({
+          message: "Please specify the id of the action you wish to update"
+        });
       } else {
         res.status(200).json(action);
       }
@@ -95,11 +93,9 @@ router.delete("/:id/actions", validateById, (req, res) => {
     .remove(id)
     .then(deleted => {
       if (!id) {
-        res
-          .status(404)
-          .json({
-            message: "Please specify the id of the action you wish to delete"
-          });
+        res.status(404).json({
+          message: "Please specify the id of the action you wish to delete"
+        });
       } else {
         res.status(200).json(`Action with id of ${id} deleted`);
       }
@@ -125,4 +121,20 @@ function validateById(req, res, next) {
     );
 }
 
-function validateProject(req, res, next) {}
+function validateProject(req, res, next) {
+  const projectId = req.body.project_id;
+  const {id} = req.params;
+  console.log('BODY ID', projectId)
+  console.log('PARAMS ID', id)
+  if (!projectId) {
+    res
+      .status(404)
+      .json({ message: "Please include a project_id in your request" });
+    } else if (projectId !== Number(id)) {
+    res
+      .status(404)
+      .json({ message: "project_id and the project you wish to update must match" });
+  } else if (projectId == id){
+    next();
+  }
+}
