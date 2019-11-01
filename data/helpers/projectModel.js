@@ -38,14 +38,14 @@ function get(id) {
 function insert(project) {
   return db('projects')
     .insert(project)
-    .then(([id]) => this.get(id));
+    .then(([id]) => get(id));
 }
 
 function update(id, changes) {
   return db('projects')
     .where('id', id)
     .update(changes)
-    .then(count => (count > 0 ? this.get(id) : null));
+    .then(count => (count > 0 ? get(id) : null));
 }
 
 function remove(id) {
