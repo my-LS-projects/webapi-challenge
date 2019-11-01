@@ -28,6 +28,15 @@ router.post("/", (req, res) => {
     );
 });
 
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const { name, description, completed } = req.body
+  console.log(req.body)
+  update(id, req.body)
+    .then(project => res.status(200).json(project))
+    .catch(error => res.status(500).json({ message: "Project could not be updated" }));
+});
+
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
   remove(id)
